@@ -2,6 +2,7 @@ import httpStatus from 'http-status';
 
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendRespone';
+import { UserServices } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
   const userData = req.body;

@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema<TUser>(
     name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    confirmPassword: { type: String, required: true },
+    confirmPassword: { type: String, },
     profilePicture: {
       type: String,
       default: 'https://i.ibb.co.com/K2D8vpy/download.png',
