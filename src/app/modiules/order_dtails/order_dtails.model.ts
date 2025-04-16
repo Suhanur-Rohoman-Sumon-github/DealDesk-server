@@ -3,8 +3,8 @@ import { TorderDetails } from "./order_dtails.interface";
 
 const orderSchema = new mongoose.Schema<TorderDetails>(
   {
-    userId: { type: String, required: true },
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    products: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
     totalAmount: { type: Number, required: true },
     paymentType: {
       type: String,
@@ -23,5 +23,5 @@ const orderSchema = new mongoose.Schema<TorderDetails>(
   { timestamps: true }
 );
 
-const Order = models.Order || model("Order", orderSchema);
-export default Order;
+export const orderModel = models.Order || model("Order", orderSchema);
+
