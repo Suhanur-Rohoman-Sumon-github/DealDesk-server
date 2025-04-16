@@ -7,7 +7,7 @@ import { TUser, TUserModel } from './user.interface';
 const userSchema = new mongoose.Schema<TUser>(
   {
     username: { type: String },
-    teligram: { type: String },
+    telegram: { type: String },
     name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -21,18 +21,15 @@ const userSchema = new mongoose.Schema<TUser>(
     id: { type: String, unique: true },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin','employer'],
       default: 'user',
     },
     isDeleted: {
       type: Boolean,
       default: false,
     },
-    currentState: {
-      type: String,
-      enum: ['pro', 'free'],
-      default: 'free',
-    },
+    myChanel: { type: String },
+    
   },
   {
     timestamps: true,
