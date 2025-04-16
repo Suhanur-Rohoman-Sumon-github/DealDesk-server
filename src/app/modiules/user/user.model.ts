@@ -7,6 +7,7 @@ import { TUser, TUserModel } from './user.interface';
 const userSchema = new mongoose.Schema<TUser>(
   {
     username: { type: String },
+    teligram: { type: String },
     name: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -16,12 +17,6 @@ const userSchema = new mongoose.Schema<TUser>(
       default: 'https://i.ibb.co.com/K2D8vpy/download.png',
     },
     coverPhoto: { type: String },
-    bio: { type: String, maxlength: 160 },
-    website: { type: String },
-    location: { type: String },
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     myFavorite: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Posts' }],
     id: { type: String, unique: true },
     role: {

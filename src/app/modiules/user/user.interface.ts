@@ -25,6 +25,9 @@ export type TUser = {
   currentState: 'pro' | 'free';
   myFavorite: Types.ObjectId[]; 
   status: keyof typeof USER_STATUS;
+  teligram: string;
+  myChanel: string;
+  passwordChangedAt?: Date;
 };
 
 export type TUserModel = {

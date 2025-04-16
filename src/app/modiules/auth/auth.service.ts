@@ -10,6 +10,7 @@ import { createToken } from './auth.utils';
 import { TLoginUser } from './auth.interface';
 
 const loginUser = async (payload: TLoginUser) => {
+  console.log(payload);
   const isUserExists = await userModel.findOne({ email: payload.email });
   if (!isUserExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found');
