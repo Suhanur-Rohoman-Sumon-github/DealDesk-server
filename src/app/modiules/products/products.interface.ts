@@ -1,4 +1,4 @@
-import  { Types } from "mongoose";
+
 
 export type TProduct = {
   title: string;
@@ -14,4 +14,20 @@ export type TProduct = {
   createdAt: Date;
   updatedAt: Date;
   shippingAndReturns?: string;
+  status :string
+}
+
+export type IPaginationOptions = {
+  page: number
+  limit: number
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}
+
+export type TProductFilterRequest = {
+  searchTerm?: string
+  category?: string
+  minPrice?: string
+  maxPrice?: string
+  sort?: string
 }

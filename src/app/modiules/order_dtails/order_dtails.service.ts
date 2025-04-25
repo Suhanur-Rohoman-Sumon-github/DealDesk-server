@@ -9,7 +9,8 @@ const createOrderInDb = async (payload: TorderDetails) => {
   return result;
 };
 const getAllOrdersFromDb = async () => {
-  const result = await orderModel.find();
+  const result = await orderModel.find().populate("userId")
+    .populate("products");
   return result;
 };
 

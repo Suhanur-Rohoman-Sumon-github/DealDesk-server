@@ -35,7 +35,7 @@ if (!isPasswordValid) {
     name: isUserExists.name,
     profilePicture: isUserExists.profilePicture,
     email: isUserExists.email,
-    currentState:isUserExists.currentState
+    
   };
 
   const accessToken = createToken(

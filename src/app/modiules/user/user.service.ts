@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import { TUser } from './user.interface';
 import { userModel } from './user.model';
@@ -6,7 +7,11 @@ import httpStatus from 'http-status';
 import AppError from '../../error/AppEroor';
 
 import { adminModel } from '../admin/admin.model';
-import { generateUserId } from './user.utils';
+import { generateAdminId, generateUserId } from './user.utils';
+import { TAdmin } from '../admin/admin.interface';
+import { orderModel } from '../order_dtails/order_dtails.model';
+
+
 
 const creteUserInDB = async (payload: TUser) => {
   const newUser = payload;
@@ -15,76 +20,6 @@ const creteUserInDB = async (payload: TUser) => {
 
   return result;
 };
-const updateProfilePictureInDb = async (userId:string,profilePicture:Express.Multer.File | undefined) => {
-  
-    if (!profilePicture) {
-    throw new Error('No profile picture provided');
-  }
-
-  
-  const profilePictureUrl = profilePicture.path; 
-
-  
-  const updatedUser = await userModel.findByIdAndUpdate(
-    userId,
-    { profilePicture: profilePictureUrl },
-    { new: true } 
-  );
-
-  if (!updatedUser) {
-    throw new Error('User not found');
-  }
-  return updatedUser
-
-};
-const updateCoverPhotoFromDb = async (userId:string,coverPhoto:Express.Multer.File | undefined) => {
-  
-    if (!coverPhoto) {
-    throw new Error('No cover phot given');
-  }
-  
-  const coverPhotoUrl = coverPhoto.path; 
-  
-  const updatedUser = await userModel.findByIdAndUpdate(
-    userId,
-    { coverPhoto: coverPhotoUrl },
-    { new: true } 
-  );
-
-  if (!updatedUser) {
-    throw new Error('User not found');
-  }
-  return updatedUser
-
-};
-const updateBio = async (userId:string,bio:string) => {
-  
-  const updatedUser = await userModel.findByIdAndUpdate(
-    userId,
-    { bio: bio },
-    { new: true } 
-  );
-
-  if (!updatedUser) {
-    throw new Error('User not found');
-  }
-  return updatedUser
-
-};
-const unfriendAUserInDB = async (userId: string, friendId: string) => {
-
-  const updatedUser = await userModel.findByIdAndUpdate(
-    userId,
-    { $pull: { friends: friendId } }, 
-    { new: true } 
-  );
-
-  if (!updatedUser) {
-    throw new Error('User not found');
-  }
-
-  return updatedUser;
-};
 
 // TODO:add user id to removed current user send requests
 const getAllUserFromDb = async () => {
@@ -92,18 +27,7 @@ const getAllUserFromDb = async () => {
 
   return result;
 };
-const getMyFriendsFromDB = async (userId:string) => {
-  const userWithFriends = await userModel
-      .findById(userId)
-      .populate('friends', 'name email profilePicture _id') 
-      .exec();
 
-    if (!userWithFriends) {
-      return { message: "User not found" };
-    }
-
-    return userWithFriends.friends;
-};
 const getMe = async (userId:string) => {
 
   
@@ -153,14 +77,69 @@ const createAdminIntoDB = async (payload: TAdmin) => {
   }
 };
 
+
+const getUserOrderInsightsFromDb = async (userId: string) => {
+  const today = new Date();
+  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const oneMonthAgo = new Date(today);
+  oneMonthAgo.setMonth(today.getMonth() - 1);
+
+  // 1. Get all user orders
+  const userOrders = await orderModel.find({ userId: new mongoose.Types.ObjectId(userId) });
+
+  // 2. Pending Orders (from today)
+  const pendingOrders = userOrders.filter(
+    order => order.orderStatus === "Pending" && new Date(order.createdAt) >= startOfToday
+  );
+
+  // 3. Today's Orders
+  const todaysOrders = userOrders.filter(
+    order => new Date(order.createdAt) >= startOfToday
+  );
+
+  // 4. Total Buy Today
+  const totalBuyToday = todaysOrders.reduce((acc, order) => acc + order.totalAmount, 0);
+
+  // 5. Total Buy Forever
+  const totalBuyForever = userOrders.reduce((acc, order) => acc + order.totalAmount, 0);
+
+  // 6. Last One Month Orders (Graph data by day)
+  const graphData: { date: string; amount: number; orders: number }[] = [];
+
+for (let d = new Date(oneMonthAgo); d <= today; d.setDate(d.getDate() + 1)) {
+  const dateStr = d.toISOString().split("T")[0];
+
+  const dailyOrders = userOrders.filter(order =>
+    new Date(order.createdAt).toISOString().startsWith(dateStr)
+  );
+
+  const dailyTotal = dailyOrders.reduce((acc, o) => acc + o.totalAmount, 0);
+
+  graphData.push({
+    date: dateStr,
+    amount: dailyTotal,
+    orders: dailyOrders.length,
+  });
+}
+
+
+
+  return {
+    pendingOrders: pendingOrders.length,
+    todaysOrders: todaysOrders.length,
+    totalBuyToday,
+    totalBuyForever,
+    graphData,
+    totalOrders: userOrders.length,
+  };
+};
+
+
+
 export const UserServices = {
   creteUserInDB,
   createAdminIntoDB,
   getMe,
   getAllUserFromDb,
-  getMyFriendsFromDB,
-  updateProfilePictureInDb,
-  updateCoverPhotoFromDb,
-  updateBio,
-  unfriendAUserInDB
+ getUserOrderInsightsFromDb
 };

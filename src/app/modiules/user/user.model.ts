@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema<TUser>(
       default: 'https://i.ibb.co.com/K2D8vpy/download.png',
     },
     coverPhoto: { type: String },
-    myFavorite: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Posts' }],
+    myFavorite: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products' }],
     id: { type: String, unique: true },
     role: {
       type: String,

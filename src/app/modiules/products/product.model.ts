@@ -12,11 +12,12 @@ const ProductSchema: Schema = new mongoose.Schema<TProduct>(
     category: { type: String, required: true },
     images: [{ type: String, required: true }],
     stock: { type: Number, default: 0 },
-    rating: [{ type: String, default: 0 }],
+    rating: [{ type: String, default: 5 }],
     discount: { type: Number, default: 0 }, 
     tags: [{ type: String }],
-    numReviews  : { type: Number, default: 0 },
-    shippingAndReturns: { type: String, default: 'No returns' },   
+    numReviews  : { type: Number, default: 5 },
+    shippingAndReturns: { type: String, default: 'If you have any problem to get our service contact our customer support we are ready to support you' }, 
+    status:{type:String , default:"inStock"}  
   },
   {
     timestamps: true,
