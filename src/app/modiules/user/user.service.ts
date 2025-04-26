@@ -12,14 +12,41 @@ import { TAdmin } from '../admin/admin.interface';
 import { orderModel } from '../order_dtails/order_dtails.model';
 
 
+import crypto from 'crypto';
+import { sendEmail } from '../../utils/sendEmail';
 
-const creteUserInDB = async (payload: TUser) => {
+
+const createUserInDB = async (payload: TUser) => {
   const newUser = payload;
   newUser.id = await generateUserId();
+  newUser.isEmailVerified = false;
+
+  // Generate a verification token
+  const verificationToken = crypto.randomBytes(32).toString('hex');
+   newUser.emailVerificationToken = verificationToken;
+
   const result = await userModel.create(newUser);
+
+  // Generate verification link
+  const verificationLink = `https://yourdomain.com/verify-email?token=${verificationToken}`;
+
+  // Send verification email
+  await sendEmail(newUser.email, `
+    <div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f4f4f4;">
+  <div style="background-color: white; padding: 20px; border-radius: 8px; text-align: center;">
+    <h2 style="color: #333;">Verify Your Email Address</h2>
+    <p style="color: #555;">Thanks for signing up! Please verify your email address by clicking the button below:</p>
+    <a href="${verificationLink}" style="display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+    <p style="color: #999; margin-top: 20px;">If you did not request this, you can safely ignore this email.</p>
+  </div>
+  <p style="text-align: center; color: #aaa; font-size: 12px; margin-top: 20px;">© 2025 Your Company. All rights reserved.</p>
+</div>
+
+  `);
 
   return result;
 };
+
 
 // TODO:add user id to removed current user send requests
 const getAllUserFromDb = async () => {
@@ -134,12 +161,27 @@ for (let d = new Date(oneMonthAgo); d <= today; d.setDate(d.getDate() + 1)) {
   };
 };
 
+const verifyEmailFromDb = async (token: string) => {
+  if (!token || typeof token !== 'string') {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid or expired verification token');
+  }
+  const user = await userModel.findOne({ emailVerificationToken: token });
+   if (!user) {
+   throw new AppError(httpStatus.NOT_FOUND, 'Invalid or expired verification token');
+  }
+  
+  user.isEmailVerified = true;
+  user.emailVerificationToken = null; 
+  await user.save();
+}
+
 
 
 export const UserServices = {
-  creteUserInDB,
+  createUserInDB,
   createAdminIntoDB,
   getMe,
   getAllUserFromDb,
- getUserOrderInsightsFromDb
+ getUserOrderInsightsFromDb,
+ verifyEmailFromDb
 };

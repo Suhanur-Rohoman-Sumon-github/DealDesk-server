@@ -21,6 +21,8 @@ export type TUser = {
   telegram: string;
   myChanel: string;
   passwordChangedAt?: Date;
+  isEmailVerified: boolean;
+  emailVerificationToken: string |null;
 };
 
 export type TUserModel = {

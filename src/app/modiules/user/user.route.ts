@@ -5,5 +5,9 @@ router.get(
   '/:userId',
   userControllers.getUserOrderInsights
 );
+router.post(
+  '/verify-email/:token',
+  userControllers.verifyEmail
+);
 
 export const userRouter = router;
