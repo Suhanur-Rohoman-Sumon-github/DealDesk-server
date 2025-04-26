@@ -14,10 +14,10 @@ export const sendEmail = async (to: string, html: string) => {
   });
 
   await transporter.sendMail({
-    from: 'mezbaul@programming-hero.com', // sender address
-    to, // list of receivers
-    subject: 'Reset your password within ten mins!', // Subject line
-    text: '', // plain text body
-    html, // html body
+    from: 'sumonsuhanurrohoman@gmail.com', 
+    to, 
+    subject: 'Reset your password within ten mins!', 
+    text: '', 
+    html, 
   });
 };

@@ -18,13 +18,23 @@ const createProductsInDB = async (
   return result
 }
 const getAllProductsFromDB = async (query: Record<string, unknown>) => {
-  const PostsQuery = new QueryBuilder(productModel.find(), query)
+  
+  let categoryFilter = {};
+  if (query.categoryId) {
+    categoryFilter = { category: query.categoryId }; // Assuming 'category' is the reference field for the category ID in product model
+    // Remove the categoryId from the query to prevent duplication
+    delete query.categoryId;
+  }
+
+  
+  const PostsQuery = new QueryBuilder(productModel.find(categoryFilter), query)
     .search(productSearchableFields)
     .filter()
     .sort()
     .fields()
     .paginate();
 
+  
   const result = await PostsQuery.modelQuery;
   const meta = await PostsQuery.countTotal(); 
 
