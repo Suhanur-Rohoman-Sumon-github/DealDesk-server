@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema<TUser>(
     id: { type: String, unique: true },
     role: {
       type: String,
-      enum: ['user', 'admin','employer'],
+      enum: ['user', 'admin','employer','client'],
       default: 'user',
     },
     isDeleted: {
