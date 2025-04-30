@@ -6,7 +6,7 @@ import { UserServices } from './user.service';
 
 const createUser = catchAsync(async (req, res) => {
   const userData = req.body;
-  console.log(userData);
+ 
 
   const result = await UserServices.createUserInDB(userData);
 
@@ -65,11 +65,25 @@ const getUserOrderInsights = catchAsync(async (req, res) => {
     data: result,
   });
 });
-const verifyEmail = catchAsync(async (req, res) => {
-   const { token } = req.params;
+const getUserVerificationCode = catchAsync(async (req, res) => {
+ const email = req.params.userEmail
+
+ 
   
 
-  const result = await UserServices.verifyEmailFromDb(token as string);
+  const result = await UserServices.getUserVerificationCodeFromDb(email);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user data  retrieve successfully',
+    data: result,
+  });
+});
+const verifyEmail = catchAsync(async (req, res) => {
+   const { code } = req.body;
+   console.log(code);
+  const result = await UserServices.verifyEmailFromDb(code as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -85,5 +99,6 @@ export const userControllers = {
   getMe,
   getAllUser,
   getUserOrderInsights,
-  verifyEmail
+  verifyEmail,
+  getUserVerificationCode
 };

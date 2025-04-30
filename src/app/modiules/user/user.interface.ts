@@ -22,7 +22,7 @@ export type TUser = {
   myChanel: string;
   passwordChangedAt?: Date;
   isEmailVerified: boolean;
-  emailVerificationToken: string |null;
+  emailVerificationCode: string |null;
 };
 
 export type TUserModel = {

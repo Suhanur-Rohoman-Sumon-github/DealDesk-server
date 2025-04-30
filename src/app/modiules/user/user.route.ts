@@ -6,8 +6,12 @@ router.get(
   userControllers.getUserOrderInsights
 );
 router.post(
-  '/verify-email/:token',
+  '/verify-email',
   userControllers.verifyEmail
+);
+router.get(
+  '/verification-code/:userEmail',
+  userControllers.getUserVerificationCode
 );
 
 export const userRouter = router;

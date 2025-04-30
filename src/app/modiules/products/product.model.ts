@@ -17,7 +17,8 @@ const ProductSchema: Schema = new mongoose.Schema<TProduct>(
     tags: [{ type: String }],
     numReviews  : { type: Number, default: 5 },
     shippingAndReturns: { type: String, default: 'If you have any problem to get our service contact our customer support we are ready to support you' }, 
-    status:{type:String , default:"inStock"}  
+    status:{type:String , default:"inStock"} , 
+    subCategory:{ type: String },
   },
   {
     timestamps: true,

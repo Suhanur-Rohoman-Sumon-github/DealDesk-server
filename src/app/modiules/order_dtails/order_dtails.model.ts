@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema<TorderDetails>(
     },
 
     transactionId: { type: String }, 
-
+    ZipCode: { type: String },
     orderStatus: {
       type: String,
       enum: ["Pending", "Processing", "Completed", "Cancelled"],

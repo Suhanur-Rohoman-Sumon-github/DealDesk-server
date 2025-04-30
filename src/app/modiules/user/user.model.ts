@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema<TUser>(
     },
     myChanel: { type: String },
     isEmailVerified:{type:Boolean,default:false},
-    emailVerificationToken: { type: String },
+    emailVerificationCode: { type: String },
   },
   {
     timestamps: true,

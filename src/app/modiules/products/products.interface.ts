@@ -15,6 +15,7 @@ export type TProduct = {
   updatedAt: Date;
   shippingAndReturns?: string;
   status :string
+  subCategory?: string
 }
 
 export type IPaginationOptions = {

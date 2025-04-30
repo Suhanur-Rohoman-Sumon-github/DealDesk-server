@@ -1,13 +1,12 @@
 import nodemailer from 'nodemailer';
 import config from '../config';
 
-export const sendEmail = async (to: string, html: string) => {
+export const sendEmail = async (to: string, html: string,subject:string) => {
   const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com.',
-    port: 465 ,
+    host: 'smtp.gmail.com',
+    port: 587  ,
     secure: config.node_Env === 'production',
     auth: {
-      
       user: 'sumonsuhanurrohoman@gmail.com',
       pass: 'lzaj rqsg nlvs dsby',
     },
@@ -16,7 +15,7 @@ export const sendEmail = async (to: string, html: string) => {
   await transporter.sendMail({
     from: 'sumonsuhanurrohoman@gmail.com', 
     to, 
-    subject: 'Reset your password within ten mins!', 
+    subject,
     text: '', 
     html, 
   });

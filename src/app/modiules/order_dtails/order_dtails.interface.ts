@@ -10,4 +10,5 @@ export type TorderDetails = {
   orderStatus: "Pending" | "Processing" | "Completed" | "Cancelled";
   createdAt?: Date;
   updatedAt?: Date;
+  ZipCode?: string;
 }
