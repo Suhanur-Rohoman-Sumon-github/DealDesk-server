@@ -4,8 +4,17 @@ import sendResponse from "../../utils/sendRespone";
 import { StatusCodes } from "http-status-codes";
 import { CategoryService } from "./product_category.service";
 const createCategory = catchAsync(async (req, res) => {
- 
-  const result = await CategoryService.createCategoryInDb(req.body);
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({
+      success: false,
+      message: 'Category name is required',
+    });
+  }
+  const result = await CategoryService.createCategoryInDb({name});
+
+  console.log(req.body, "category body");
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,

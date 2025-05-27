@@ -14,5 +14,9 @@ router.get(
   '/:userId',
   OrdersControllers.getSingleOrders
 );
+router.patch(
+  '/:orderId',
+  OrdersControllers.updateOrder
+);
 
 export const orderRouter = router;

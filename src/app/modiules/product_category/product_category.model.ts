@@ -1,34 +1,27 @@
 import { model, Schema } from "mongoose";
 import { TProductCategory } from "./product_category.interface";
+import slugify from "slugify"; // <- install slugify package
 
 const CategorySchema = new Schema<TProductCategory>(
   {
     name: {
       type: String,
       required: true,
-      trim: true,
     },
     slug: {
       type: String,
-      required: true,
       unique: true,
-      lowercase: true,
-    },
-    description: {
-      type: String,
-    },
-    image: {
-      type: String, 
-    },
-    parent: {
-      type: Schema.Types.ObjectId,
-      ref: "Category",
-      default: null,
-    },
+    }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
+
+// Before saving, automatically generate slug
+CategorySchema.pre('save', function (next) {
+  if (this.isModified('name')) {
+    this.slug = slugify(this.name, { lower: true, strict: true });
+  }
+  next();
+});
 
 export const CategoryModel = model<TProductCategory>("Category", CategorySchema);

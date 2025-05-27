@@ -18,13 +18,23 @@ const createProductsInDB = async (
   return result
 }
 const getAllProductsFromDB = async (query: Record<string, unknown>) => {
-  const PostsQuery = new QueryBuilder(productModel.find(), query)
+  
+  let categoryFilter = {};
+  if (query.categoryId) {
+    categoryFilter = { category: query.categoryId };
+    
+    delete query.categoryId;
+  }
+
+  
+  const PostsQuery = new QueryBuilder(productModel.find(categoryFilter), query)
     .search(productSearchableFields)
-    .filter()
+    
     .sort()
     .fields()
-    .paginate();
+    
 
+  
   const result = await PostsQuery.modelQuery;
   const meta = await PostsQuery.countTotal(); 
 
@@ -37,6 +47,18 @@ const getSingleProductsFromDb = async (id:string) => {
 const getRelatedProductsFromDb = async (categoryName:string) => {
   const result = await productModel.find({category:categoryName});
   return result;
+};
+const updatedProductFromDb = async (productId: string, payload: Partial<TProduct>) => {
+
+  const updatedProduct = await productModel.findByIdAndUpdate(
+    productId,
+    { $set: payload }, 
+    { new: true }
+  );
+
+
+
+  return updatedProduct;
 };
 
 const addFavoritePostsFromDB = async (
@@ -89,5 +111,6 @@ export const ProductServices = {
   getSingleProductsFromDb  ,
   addFavoritePostsFromDB,
   getMyFavoriteProductFromDb,
-  getRelatedProductsFromDb
+  getRelatedProductsFromDb,
+  updatedProductFromDb
 }
