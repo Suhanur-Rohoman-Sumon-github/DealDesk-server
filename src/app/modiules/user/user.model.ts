@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema<TUser>(
     },
     coverPhoto: { type: String },
     myFavorite: [{ type: mongoose.Schema.Types.ObjectId, ref: 'products' }],
-    id: { type: String, unique: true },
+    id: { type: String },
     role: {
       type: String,
       enum: ['user', 'admin','employer','client'],
@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema<TUser>(
     myChanel: { type: String },
     isEmailVerified:{type:Boolean,default:false},
     emailVerificationCode: { type: String },
+    isAccountAproved: { type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'},
   },
   {
     timestamps: true,
@@ -68,3 +71,20 @@ userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
 
 // Export the model with the correct type
 export const userModel = mongoose.model<TUser, TUserModel>('User', userSchema);
+
+
+// models/jabedaModel.ts
+
+
+const jabedaSchema = new mongoose.Schema({
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
+  type: { type: String, enum: ["Credit", "Debit"], required: true },
+  description: String,
+  amount: { type: Number, required: true },
+  date: { type: Date, required: true },
+});
+
+jabedaSchema.index({ orderId: 1, type: 1 }, { unique: true }); // optional safety
+
+export const JabedaModel = mongoose.model("Jabeda", jabedaSchema);
+

@@ -11,4 +11,5 @@ export type TorderDetails = {
   createdAt?: Date;
   updatedAt?: Date;
   ZipCode?: string;
+  proxyAddress?: string;
 }

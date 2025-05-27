@@ -3,7 +3,7 @@
 export type TProduct = {
   title: string;
   description: string;
-  price: number;
+  sellprice: number;
   category: string;
   images: string[];
   stock: number;
@@ -16,6 +16,7 @@ export type TProduct = {
   shippingAndReturns?: string;
   status :string
   subCategory?: string
+  buyPrice?: number
 }
 
 export type IPaginationOptions = {

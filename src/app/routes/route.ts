@@ -4,6 +4,7 @@ import { productRouter } from '../modiules/products/product.route';
 import { orderRouter } from '../modiules/order_dtails/order_dtails.route';
 import { CategoryRoute } from '../modiules/product_category/product_category.route';
 import { userRouter } from '../modiules/user/user.route';
+import { AdminRouter } from '../modiules/admin/admin.routes';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ const moduleRoutes = [
   {
     path: '/users',
     route: userRouter,
+  },
+  {
+    path: '/admin',
+    route: AdminRouter,
   },
 ];
 

@@ -23,6 +23,7 @@ export type TUser = {
   passwordChangedAt?: Date;
   isEmailVerified: boolean;
   emailVerificationCode: string |null;
+  isAccountAproved: string;
 };
 
 export type TUserModel = {
@@ -37,5 +38,25 @@ export type TUserModel = {
   ): boolean;
 } & Model<TUser>
 
+
+export type PieSlice = {
+  categoryId: string;
+  categoryName: string;
+  amount: number;
+  percentage: number;
+}
+
+export type GraphPoint = {
+  date: string;
+  amount: number;
+  orders: number;
+}
+
+export type JabedaEntry = {
+  type: "Credit" | "Debit";
+  description: string;
+  amount: number;
+  date: string;
+}
 
 export type TUserRol = keyof typeof User_Role;

@@ -4,7 +4,7 @@ import { ProductServices } from "./product.service";
 import { StatusCodes } from "http-status-codes";
 const createProducts = catchAsync(async (req, res) => {
 
-  const { title, description, price, stock,  category } =
+  const { title, description, price, stock, category, buyPrice, sellprice } =
     JSON.parse(req.body.data)
 
     console.log(req.body.data);
@@ -21,7 +21,7 @@ const createProducts = catchAsync(async (req, res) => {
   }
 
   const result = await ProductServices.createProductsInDB(
-    { title, description, price, stock, category},
+    { title, description, sellprice,buyPrice, stock, category},
     images,
   )
   sendResponse(res, {
@@ -77,7 +77,7 @@ const addToFavorite = catchAsync(async (req, res) => {
 
   const result = await ProductServices.addFavoritePostsFromDB(userId, postsId);
 
-  console.log(result);
+
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -91,15 +91,28 @@ const getFavoriteProducts = catchAsync(async (req, res) => {
   
   const userId = req.params.userId;
 
-
- 
-
   const result = await ProductServices.getMyFavoriteProductFromDb(userId);
 
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'favorite product added successfully',
+    data: result,
+  });
+});
+const updateProduct = catchAsync(async (req, res) => {
+  
+ const { productId } = req.params;
+
+
+
+
+  const result = await ProductServices.updatedProductFromDb(productId, req.body);
+
+  sendResponse(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: ' product updated successfully',
     data: result,
   });
 });
@@ -110,5 +123,6 @@ export const ProductController = {
   getSingleProducts,
   addToFavorite,
   getFavoriteProducts,
-  getRelatedProducts
+  getRelatedProducts,
+  updateProduct
 }

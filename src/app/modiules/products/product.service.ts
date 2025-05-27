@@ -48,6 +48,18 @@ const getRelatedProductsFromDb = async (categoryName:string) => {
   const result = await productModel.find({category:categoryName});
   return result;
 };
+const updatedProductFromDb = async (productId: string, payload: Partial<TProduct>) => {
+
+  const updatedProduct = await productModel.findByIdAndUpdate(
+    productId,
+    { $set: payload }, 
+    { new: true }
+  );
+
+
+
+  return updatedProduct;
+};
 
 const addFavoritePostsFromDB = async (
   userId: string,
@@ -99,5 +111,6 @@ export const ProductServices = {
   getSingleProductsFromDb  ,
   addFavoritePostsFromDB,
   getMyFavoriteProductFromDb,
-  getRelatedProductsFromDb
+  getRelatedProductsFromDb,
+  updatedProductFromDb
 }

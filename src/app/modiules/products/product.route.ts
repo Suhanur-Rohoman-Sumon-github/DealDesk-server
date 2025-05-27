@@ -29,5 +29,9 @@ router.get(
   '/relatedProducts/:categoryName',
   ProductController.getRelatedProducts
 );
+router.patch(
+  '/:productId',
+  ProductController.updateProduct
+);
 
 export const productRouter = router;
