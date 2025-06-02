@@ -26,5 +26,9 @@ router.patch(
   '/allUser/update-Chanel/:userEmail',
   userControllers.updateMyTeligramChanel
 );
+router.post(
+  '/allUser/add-',
+  userControllers.updateMyTeligramChanel
+);
 
 export const userRouter = router;

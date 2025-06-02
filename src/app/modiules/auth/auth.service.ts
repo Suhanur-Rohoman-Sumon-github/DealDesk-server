@@ -35,6 +35,7 @@ if (!isPasswordValid) {
     name: isUserExists.name,
     profilePicture: isUserExists.profilePicture,
     email: isUserExists.email,
+    myChanel: isUserExists.myChanel,
     
   };
 

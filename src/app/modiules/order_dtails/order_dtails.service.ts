@@ -1,13 +1,28 @@
+import productModel from "../products/product.model";
 import { TorderDetails } from "./order_dtails.interface";
 import { orderModel } from "./order_dtails.model";
 import mongoose from "mongoose";
+
+
 const createOrderInDb = async (payload: TorderDetails) => {
+ 
+
   
-console.log(payload);
+
+  
+  // const product = await productModel.findById(products[0]);
+
+  // if (!product) {
+  //   throw new Error("Product not found.");
+  // }
+
+  // const totalAmount = product.price * quantity;
+
   const result = await orderModel.create(payload);
-console.log(result);
+
   return result;
 };
+
 const getAllOrdersFromDb = async () => {
   const result = await orderModel.find().populate("userId")
     .populate("products").sort({ createdAt: -1 });

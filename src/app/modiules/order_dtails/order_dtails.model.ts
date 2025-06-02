@@ -20,6 +20,8 @@ const orderSchema = new mongoose.Schema<TorderDetails>(
       enum: ["Pending", "Processing", "Completed", "Cancelled"],
       default: "Pending",
     },
+    quantity: { type: Number },
+    
   },
   { timestamps: true }
 );
