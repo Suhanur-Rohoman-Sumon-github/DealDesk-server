@@ -17,6 +17,7 @@ export type TProduct = {
   status :string
   subCategory?: string
   buyPrice?: number
+  totalPrice?: number
 }
 
 export type IPaginationOptions = {

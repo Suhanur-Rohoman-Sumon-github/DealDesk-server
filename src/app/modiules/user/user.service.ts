@@ -203,11 +203,11 @@ export const getAdminInsightDataFromDb = async () => {
   const countByStatus = (orders: any[], status: string) =>
     orders.filter(o => o.orderStatus === status).length;
 
-  const todaysSellAmount       = sumAmt(todaysOrders);
+  const todaysSellAmount = sumAmt(todaysOrders.filter(o => o.orderStatus === "completed"));
   const todaysCompletedOrders  = countByStatus(todaysOrders, "completed");
   const todaysPendingOrders    = countByStatus(todaysOrders, "Pending");
   const totalCompletedOrders   = countByStatus(allOrders, "completed");
-  const lifetimeSellAmount     = sumAmt(allOrders);
+  const lifetimeSellAmount     = sumAmt(allOrders.filter(o => o.orderStatus === "completed"));
 
   // Revenue = sum of (totalAmount - buyCost) for completed orders
   const calcRevenue = (orders: any[]) => orders.reduce((sum, o) => {
@@ -289,6 +289,8 @@ if (sortedCategories.length > 0) {
 
   for (const o of allOrders) {
     if (o.orderStatus !== "completed") continue;
+
+   
   
     // Check if statements already exist for this orderId
     const existing = await JabedaModel.findOne({ orderId: o._id }).lean();
