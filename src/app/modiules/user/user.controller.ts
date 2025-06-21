@@ -117,6 +117,28 @@ const getMyChanel = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getAdmins = catchAsync(async (req, res) => {
+  
+  
+   
+  const result = await UserServices.getAdminsFromDb();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'admin retrieve successfully',
+    data: result,
+  });
+});
+const updateAdminPaymentLinks = catchAsync(async (req, res) => {
+  const result = await UserServices.getAdminsFromDb();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'payment link updated successfully',
+    data: result,
+  });
+});
 
 export const userControllers = {
   createUser,
@@ -128,5 +150,7 @@ export const userControllers = {
   getUserVerificationCode,
   getAdminInsitData,
   updateMyTeligramChanel,
-  getMyChanel
+  getMyChanel,
+  getAdmins,
+  updateAdminPaymentLinks
 };

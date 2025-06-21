@@ -28,13 +28,21 @@ const userSchema = new mongoose.Schema<TUser>(
       type: Boolean,
       default: false,
     },
+    cryptoWallets: {
+      BTC: { type: String },
+      LTC: { type: String },
+      TRC20: { type: String },
+    },
     myChanel: { type: String },
     isEmailVerified:{type:Boolean,default:false},
+    isActive:{type:Boolean,default:false},
     emailVerificationCode: { type: String },
     isAccountAproved: { type: String,
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending'},
+    
   },
+ 
   {
     timestamps: true,
   },

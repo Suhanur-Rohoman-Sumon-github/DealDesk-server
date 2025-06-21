@@ -24,6 +24,28 @@ export type TUser = {
   isEmailVerified: boolean;
   emailVerificationCode: string |null;
   isAccountAproved: string;
+  isActive: boolean
+  address?: string;
+  phone?: string;
+  currentState?: 'pro' | 'free';
+  followers?: string[];
+  following?: string[];
+  friends?: string[];
+  __v?: number;
+  isTwoFactorEnabled?: boolean;
+  twoFactorSecret?: string;
+  twoFactorAuthCode?: string;
+  twoFactorAuthCodeExpires?: Date;
+  twoFactorAuthVerified?: boolean;
+  twoFactorAuthVerifiedAt?: Date;
+  twoFactorAuthVerifiedBy?: string;
+  twoFactorAuthVerifiedById?: Types.ObjectId;
+  paymentMethod?: string[]; 
+  cryptoWallets?: {
+    BTC?: string;
+    LTC?: string;
+    TRC20?: string;
+  };
 };
 
 export type TUserModel = {

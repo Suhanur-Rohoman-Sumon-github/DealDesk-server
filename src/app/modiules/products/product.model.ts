@@ -19,7 +19,7 @@ const ProductSchema: Schema = new mongoose.Schema<TProduct>(
     shippingAndReturns: { type: String, default: 'If you have any problem to get our service contact our customer support we are ready to support you' }, 
     status:{type: String,
       enum: ["inStock", "outOfStock"],
-      default: "Pending",} , 
+      default: "inStock",} , 
     subCategory:{ type: String },
     totalPrice : {type: Number, default: 0 },
   },

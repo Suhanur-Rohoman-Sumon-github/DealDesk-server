@@ -22,13 +22,17 @@ router.get(
   '/allUser/my-chanel/:userEmail',
   userControllers.getMyChanel
 );
+router.get(
+  '/allUser/my-chanel/:userEmail',
+  userControllers.getMyChanel
+);
 router.patch(
   '/allUser/update-Chanel/:userEmail',
   userControllers.updateMyTeligramChanel
 );
-router.post(
-  '/allUser/add-',
-  userControllers.updateMyTeligramChanel
+router.get(
+  '/allUser/admins',
+  userControllers.getAdmins
 );
 
 export const userRouter = router;

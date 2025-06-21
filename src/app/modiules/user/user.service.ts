@@ -193,7 +193,7 @@ export const getAdminInsightDataFromDb = async () => {
   const inRange = (d: Date, start: Date, end: Date) => d >= start && d < end;
   const toDate = (d: any) => (d instanceof Date ? d : new Date(d));
 
-  // 4) Partition today’s orders
+  // 4) Partition today's orders
   const todaysOrders = allOrders.filter(o =>
     inRange(toDate(o.createdAt), startOfToday, now)
   );
@@ -235,39 +235,13 @@ export const getAdminInsightDataFromDb = async () => {
     });
   }
 
-  // 7) Category pie (today’s sales)
-  // const todayOnly = allOrders.filter(o => toDate(o.createdAt) >= startOfToday);
-  // const catMap: Record<string, number> = {};
-  // todayOnly.forEach(o => {
-  //   if (!Array.isArray(o.products)) return;
-  //   o.products.forEach((p: any) => {
-  //     const id = String(p.category || "uncategorized");
-  //     catMap[id] = (catMap[id]||0) + (p.price||0)*(p.quantity||1);
-  //   });
-  // });
-  // const ids = Object.keys(catMap).filter(id => id !== "uncategorized");
-  // const cats = await categoryModel.find({ _id: { $in: ids } }, { name:1 }).lean();
-  // const nameById = cats.reduce((acc:any,c:any)=>(acc[c._id]=c.name,acc),{});
-  // const grandTotal = Object.values(catMap).reduce((s,v)=>s+v,0)||1;
-  // const categorySales: PieSlice[] = Object.entries(catMap).map(([id,amt])=>({
-  //   categoryId: id,
-  //   categoryName: nameById[id]||"Uncategorized",
-  //   amount: amt,
-  //   percentage: Math.round((amt/grandTotal)*10000)/100,
-  // }));
-
+  // 7) Category pie (today's sales)
   const categorySalesMap: Record<string, number> = {};
 
   todaysOrders.forEach(order => {
-    console.log("Processing order:", order._id);
     if (order.orderStatus !== "completed") return;
-    console.log("Order is completed:", order._id);
-   
- 
     order.products.forEach((p: any) => {
-      console.log("Processing product:", p);
       const catId = String(p.category || "uncategorized");
-      console.log("Processing product:", p._id, "in category:", catId);
       const saleAmount = (p.sellprice || 0) * (p.quantity || 1);
       categorySalesMap[catId] = (categorySalesMap[catId] || 0) + saleAmount;
     });
@@ -287,59 +261,67 @@ if (sortedCategories.length > 0) {
   trendingCategory = catDoc?.name || "Uncategorized";
 }
 
+// --- Jabeda writing section with transaction ---
+const session = await mongoose.startSession();
+try {
+  session.startTransaction();
   for (const o of allOrders) {
-    if (o.orderStatus !== "completed") continue;
-
-   
-  
-    // Check if statements already exist for this orderId
-    const existing = await JabedaModel.findOne({ orderId: o._id }).lean();
-    if (existing) {
-      // Already saved, skip to next order
-      continue;
-    }
-  
+    if ((o.orderStatus || "").toLowerCase() !== "completed") continue;
     const date = o.createdAt.toISOString().slice(0, 10);
-  
-   
-  
     const sale = o.totalAmount || 0;
-  
-    const creditStmt = new JabedaModel({
-      orderId: o._id,
-      type: "Credit",
-      description: `Sale revenue for order ${o._id}`,
-      amount: sale,
-      date,
-    });
-    await creditStmt.save();
-  
-    const debitStmt = new JabedaModel({
-      orderId: o._id,
-      type: "Debit",
-      description: `Buying cost for order ${o._id}`,
-      amount: o.products.buyPrice,
-      date,
-    });
-    await debitStmt.save();
+
+    const hasCredit = await JabedaModel.findOne({ orderId: o._id, type: "Credit" }).session(session);
+    if (!hasCredit) {
+      const creditStmt = new JabedaModel({
+        orderId: o._id,
+        type: "Credit",
+        description: `Sale revenue for order ${o._id}`,
+        amount: sale,
+        date,
+      });
+      await creditStmt.save({ session });
+    }
+
+    const buyCost = Array.isArray(o.products)
+      ? o.products.reduce((sum, p) => sum + (p.buyPrice || 0) * (p.quantity || 1), 0)
+      : 0;
+
+    const hasDebit = await JabedaModel.findOne({ orderId: o._id, type: "Debit" }).session(session);
+    if (!hasDebit) {
+      const debitStmt = new JabedaModel({
+        orderId: o._id,
+        type: "Debit",
+        description: `Buying cost for order ${o._id}`,
+        amount: buyCost,
+        date,
+      });
+      await debitStmt.save({ session });
+    }
   }
+  await session.commitTransaction();
+} catch (err) {
+  await session.abortTransaction();
+  throw err;
+} finally {
+  session.endSession();
+}
+// --- End Jabeda writing section ---
+
+// After all are saved, fetch all statements (including manual)
+const jabedaStatements = await JabedaModel.find()
+  .sort({ date: -1, _id: -1 })
+  .lean();
+
+// Compute current balance
+const currentBalance = jabedaStatements.reduce(
+  (bal, e) => (e.type === "Credit" ? bal + e.amount : bal - e.amount),
+  0
+);
   
   
-  // After all are saved, fetch all statements (including manual)
-  const jabedaStatements = await JabedaModel.find()
-    .sort({ date: -1, _id: -1 })
-    .lean();
   
-  // Compute current balance
-  const currentBalance = jabedaStatements.reduce(
-    (bal, e) => (e.type === "Credit" ? bal + e.amount : bal - e.amount),
-    0
-  );
-  
-  
-  
-  const pendingAccounts = await userModel.countDocuments({ isAccountAproved: "pending" });
-  const currentProducts = await productModel.countDocuments();
+const pendingAccounts = await userModel.countDocuments({ isAccountAproved: "pending" });
+const currentProducts = await productModel.countDocuments();
 
 
   
@@ -386,6 +368,32 @@ if (sortedCategories.length > 0) {
     isEmailVerified: user.isEmailVerified,
   };
 };
+ const getAdminsFromDb = async () => {
+ 
+ const admins = await userModel.find({ role: 'admin' }, { id: 1, email: 1, role: 1 });
+  if (!admins || admins.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No admins found for this user");
+  }
+  return admins.map(admin => ({
+    id: admin.id,
+    email: admin.email,
+    role: admin.role,
+ 
+  }));
+};
+ const updateAdminPaymentLinksFromDb = async () => {
+ 
+ const admins = await userModel.find({ role: 'admin' }, { id: 1, email: 1, role: 1 });
+  if (!admins || admins.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No admins found for this user");
+  }
+  return admins.map(admin => ({
+    id: admin.id,
+    email: admin.email,
+    role: admin.role,
+ 
+  }));
+};
 
 const verifyEmailFromDb = async (code: string) => {
   if (!code || typeof code !== 'string') {
@@ -426,5 +434,7 @@ export const UserServices = {
  getUserVerificationCodeFromDb,
  getAdminInsightDataFromDb,
  updateMyTeligramChanelFromDb,
- getMyChanelFromDb
+ getMyChanelFromDb,
+ getAdminsFromDb,
+ updateAdminPaymentLinksFromDb
 };
