@@ -8,10 +8,16 @@ import { JwtPayload } from 'jsonwebtoken';
 import { userModel } from '../user/user.model';
 import { createToken } from './auth.utils';
 import { TLoginUser } from './auth.interface';
+import { ssnUserModel } from '../ssnUser/ssnUser.model';
 
 const loginUser = async (payload: TLoginUser) => {
   console.log(payload);
-  const isUserExists = await userModel.findOne({ email: payload.email });
+  const isUserExists = await ssnUserModel.findOne({
+    $or: [
+      { email: payload.email },
+      { username: payload.username }
+    ]
+  });
   if (!isUserExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found');
   }
@@ -55,6 +61,7 @@ if (!isPasswordValid) {
     accessToken,
     refreshToken,
     user: isUserExists,
+    role: isUserExists.role,
   };
 };
 const getRefreshToken = async (token: string) => {

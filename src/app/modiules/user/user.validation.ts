@@ -17,7 +17,7 @@ const createUserValidationSchema = z.object({
       .min(1, 'Username is required')
       .max(100, 'Username too long')
       .optional(),
-    email: z.string().email('Invalid email address'),
+    email: z.string().email('Invalid email address').optional(),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     profilePicture: z.string().optional(),
     coverPhoto: z.string().optional(),

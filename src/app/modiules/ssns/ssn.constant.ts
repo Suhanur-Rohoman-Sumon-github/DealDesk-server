@@ -1,0 +1,1 @@
+export const ssnSerchableField = ['firstName','lastName','city','state','zipCode',]
