@@ -11,7 +11,7 @@ import { TLoginUser } from './auth.interface';
 import { ssnUserModel } from '../ssnUser/ssnUser.model';
 
 const loginUser = async (payload: TLoginUser) => {
-  console.log(payload);
+ 
   const isUserExists = await ssnUserModel.findOne({
     $or: [
       { email: payload.email },
@@ -22,13 +22,13 @@ const loginUser = async (payload: TLoginUser) => {
     throw new AppError(httpStatus.NOT_FOUND, 'user not found');
   }
 
-  const isPasswordValid = await bcrypt.compare(payload.password, isUserExists.password);
+  const isPasswordValid =  (payload.password === isUserExists.password);
 if (!isPasswordValid) {
   throw new AppError(httpStatus.FORBIDDEN, 'Wrong password');
 }
 
   const isUserDeleted = await userModel.findOne({ isDeleted: true });
-
+ 
   if (isUserDeleted) {
     throw new AppError(httpStatus.FORBIDDEN, 'user deleted ');
   }
@@ -38,11 +38,6 @@ if (!isPasswordValid) {
     userId: isUserExists.id,
     role: isUserExists.role,
     username: isUserExists.username,
-    name: isUserExists.name,
-    profilePicture: isUserExists.profilePicture,
-    email: isUserExists.email,
-    myChanel: isUserExists.myChanel,
-    
   };
 
   const accessToken = createToken(

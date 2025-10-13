@@ -1,8 +1,10 @@
-import z from 'zod';
+// auth.validation.ts
+import { z } from "zod";
+
 const loginValidationSchema = z.object({
   body: z.object({
-    email: z.string({ required_error: 'email is required' }).optional(),
-    password: z.string({ required_error: 'Password is required' }),
+    username: z.string({ required_error: "Username is required" }),
+    password: z.string({ required_error: "Password is required" }),
   }),
 });
 

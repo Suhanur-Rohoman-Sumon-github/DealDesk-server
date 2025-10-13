@@ -18,6 +18,10 @@ const ssnSchema = new Schema<TSSN>(
     bank: { type: String, required: true },
     routingNumber: { type: String, required: true },
     email: { type: String, required: true },
+    isSold: { type: Boolean, default: false },
+    soldTo: { type: Schema.Types.ObjectId, ref: "SsnUser", default: null },
+    price: { type: Number, default: 0 },
+  
   },
   { timestamps: true }
 );

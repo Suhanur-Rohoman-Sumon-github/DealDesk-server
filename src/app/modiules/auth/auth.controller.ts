@@ -9,6 +9,7 @@ import sendResponse from '../../utils/sendRespone';
 import { AuthServices } from './auth.service';
 
 const loginUser = catchAsync(async (req, res) => {
+  console.log(req.body);
   const { accessToken, refreshToken,role } = await AuthServices.loginUser(req.body);
   res.cookie('refreshToken', refreshToken, {
     secure: config.node_Env === 'production',

@@ -9,6 +9,12 @@ const router = express.Router();
 router.get('/', 
   SSNController.getAllSSnController
 );
+router.patch('/buy', 
+  SSNController.buySsnController
+);
+router.get('/:userId', 
+  SSNController.getMySsn
+);
 
 
 export const ssnRouter = router; 

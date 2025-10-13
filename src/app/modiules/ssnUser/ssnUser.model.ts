@@ -30,19 +30,19 @@ const userSchema = new Schema<TUser>(
   }
 );
 
-userSchema.pre<TUser>('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
- 
-    const salt = await bcryptjs.genSalt(10); 
-    this.password = await bcryptjs.hash(this.password, salt);
-  
-  next(); // Call the next middleware
-});
+// userSchema.pre('save', async function (next) {
+//   if (!this.isModified('password')) return next(); // ✅ skip if not modified
+//   const salt = await bcryptjs.genSalt(10);
+//   this.password = await bcryptjs.hash(this.password, salt);
+//   next();
+// });
+
 
 // Add the static methods to the userSchema
-userSchema.statics.isUserExistsByEmail = async function (email: string) {
-  return await this.findOne({ email }).select('+password');
+userSchema.statics.isUserExistsByUsername = async function (username: string) {
+  return await this.findOne({ username }).select('+password');
 };
+
 
 userSchema.statics.isPasswordMatched = async function (
   plainTextPassword: string,

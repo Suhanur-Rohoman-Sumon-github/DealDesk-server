@@ -14,4 +14,8 @@ export type TSSN = {
   bank: string;
   routingNumber: string;
   email: string;
+  isSold: boolean;
+  soldTo?: string; 
+  price: number;
+  createdBy: string;
 }
