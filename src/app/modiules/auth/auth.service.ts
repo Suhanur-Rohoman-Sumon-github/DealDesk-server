@@ -38,6 +38,7 @@ if (!isPasswordValid) {
     userId: isUserExists.id,
     role: isUserExists.role,
     username: isUserExists.username,
+    balance: isUserExists.balance,
   };
 
   const accessToken = createToken(

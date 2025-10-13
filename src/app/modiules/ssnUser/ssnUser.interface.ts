@@ -6,6 +6,7 @@ export type TUser = {
   balance: number;
   orders: Types.ObjectId[]; 
   role: string; 
+  processedTxIds?: string[];
 };
 
 

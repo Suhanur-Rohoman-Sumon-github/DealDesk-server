@@ -12,7 +12,18 @@ const createSnUser = catchAsync(async (req, res) => {
     data: result,
   });
 });
+const getUserBalance = catchAsync(async (req, res) => {
+  const {identifier} = req.params;
+  const result = await ssnUserServices.getUserBalance(identifier);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user is balance retrieve successfully',
+    data: result,
+  });
+});
 
 export const ssnUserController = {
     createSnUser,
+    getUserBalance
 }

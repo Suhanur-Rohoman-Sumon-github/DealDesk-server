@@ -15,6 +15,9 @@ router.patch('/buy',
 router.get('/:userId', 
   SSNController.getMySsn
 );
+router.post('/:userId', 
+  SSNController.getMySsn
+);
 
 
 export const ssnRouter = router; 

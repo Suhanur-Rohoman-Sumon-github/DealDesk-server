@@ -24,6 +24,7 @@ const userSchema = new Schema<TUser>(
         ref: "SSN", 
       },
     ],
+    processedTxIds: { type: [String], default: [] },
   },
   {
     timestamps: true,

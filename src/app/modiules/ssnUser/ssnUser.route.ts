@@ -19,5 +19,9 @@ router.post(
   validateRequest(userValidation.createUserValidationSchema),
   ssnUserController.createSnUser,
 );
+router.get(
+  '/:identifier',
+  ssnUserController.getUserBalance,
+);
 
 export const ssnUserRoute = router;
