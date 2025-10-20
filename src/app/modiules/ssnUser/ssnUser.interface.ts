@@ -7,6 +7,7 @@ export type TUser = {
   orders: Types.ObjectId[]; 
   role: string; 
   processedTxIds?: string[];
+  cart: Types.ObjectId[];
 };
 
 
