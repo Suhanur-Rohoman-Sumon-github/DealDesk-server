@@ -24,6 +24,12 @@ const userSchema = new Schema<TUser>(
         ref: "SSN", 
       },
     ],
+   cart: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "SSN",
+      }
+    ],
     processedTxIds: { type: [String], default: [] },
   },
   {

@@ -3,7 +3,7 @@ import validateRequest from '../../middleware/validateRequest';
 import { AuthValidation } from '../auth/auth.validation';
 import { userValidation } from '../user/user.validation';
 import { AuthControllers } from '../auth/auth.controller';
-import { ssnUserController } from './ssnUser.controller';
+import { ssnUserCartController, ssnUserController } from './ssnUser.controller';
 
 
 
@@ -24,4 +24,8 @@ router.get(
   ssnUserController.getUserBalance,
 );
 
-export const ssnUserRoute = router;
+router.put("/cart/add", ssnUserCartController.addToCart);
+router.patch("/cart/remove", ssnUserCartController.removeFromCart);
+router.get("/cart/:userId", ssnUserCartController.getCart);
+
+export const ssnUserRoute = router; 
