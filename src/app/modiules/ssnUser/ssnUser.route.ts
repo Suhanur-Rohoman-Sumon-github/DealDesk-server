@@ -4,6 +4,7 @@ import { AuthValidation } from '../auth/auth.validation';
 import { userValidation } from '../user/user.validation';
 import { AuthControllers } from '../auth/auth.controller';
 import { ssnUserCartController, ssnUserController } from './ssnUser.controller';
+import Auth from '../../middleware/auth';
 
 
 
@@ -24,8 +25,8 @@ router.get(
   ssnUserController.getUserBalance,
 );
 
-router.put("/cart/add", ssnUserCartController.addToCart);
-router.patch("/cart/remove", ssnUserCartController.removeFromCart);
-router.get("/cart/:userId", ssnUserCartController.getCart);
+router.put("/cart/add", Auth(), ssnUserCartController.addToCart);
+router.patch("/cart/remove", Auth(), ssnUserCartController.removeFromCart);
+router.get("/cart/:userId", Auth(), ssnUserCartController.getCart);
 
 export const ssnUserRoute = router; 
