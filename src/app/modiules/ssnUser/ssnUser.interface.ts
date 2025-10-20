@@ -1,4 +1,5 @@
 import { Model, Types } from "mongoose";
+import { User_Role } from "./ssnUser.const";
 
 export type TUser = {
   username: string;
@@ -10,6 +11,8 @@ export type TUser = {
   cart: Types.ObjectId[];
 };
 
+
+export type TUserRol = keyof typeof User_Role;
 
 export type TUserModel = {
   isUserExistsByEmail(id: string): Promise<TUser>;

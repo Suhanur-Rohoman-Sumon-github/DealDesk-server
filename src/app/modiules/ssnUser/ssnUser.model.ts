@@ -24,13 +24,18 @@ const userSchema = new Schema<TUser>(
         ref: "SSN", 
       },
     ],
-   cart: [
+    cart: [
       {
         type: Schema.Types.ObjectId,
         ref: "SSN",
       }
     ],
     processedTxIds: { type: [String], default: [] },
+    role:{
+      type: String,
+      enum: ['user', 'admin'],
+      default: 'user',  
+    }
   },
   {
     timestamps: true,

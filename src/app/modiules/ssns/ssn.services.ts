@@ -64,7 +64,18 @@ if (query.dateOfBirthFrom || query.dateOfBirthTo) {
 
 
 const buySsn = async (ssnId: string, userId: string, price: number) => {
-  // Step 1: Mark SSN as sold
+  // Step 0: Get the user first
+  const user = await ssnUserModel.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Step 1: Check if user has enough balance
+  if (user.balance < price) {
+    throw new Error("Insufficient balance. Please recharge your account.");
+  }
+
+  // Step 2: Mark SSN as sold
   const updatedSsn = await SSNModel.findByIdAndUpdate(
     ssnId,
     { isSold: true, soldTo: userId, price },
@@ -75,12 +86,12 @@ const buySsn = async (ssnId: string, userId: string, price: number) => {
     throw new Error("SSN not found or failed to update");
   }
 
- 
+  // Step 3: Update user orders and balance
   const updatedUser = await ssnUserModel.findByIdAndUpdate(
     userId,
     {
-      $push: { orders: ssnId,createdAt: new Date() },
-      $inc: { balance: -price }, 
+      $push: { orders: ssnId, createdAt: new Date() },
+      $inc: { balance: -price },
     },
     { new: true }
   );
@@ -95,6 +106,7 @@ const buySsn = async (ssnId: string, userId: string, price: number) => {
     user: updatedUser,
   };
 };
+
 
 const getMySsn = async (userId: string) => {
   const userWithOrders = await ssnUserModel.findById(userId).populate({
