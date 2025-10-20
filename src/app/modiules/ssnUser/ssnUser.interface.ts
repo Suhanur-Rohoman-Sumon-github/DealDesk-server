@@ -3,12 +3,15 @@ import { User_Role } from "./ssnUser.const";
 
 export type TUser = {
   username: string;
+  email?:string
   password: string;
   balance: number;
   orders: Types.ObjectId[]; 
   role: string; 
+  transactions: string[];
   processedTxIds?: string[];
   cart: Types.ObjectId[];
+  profilePicture?: string;
 };
 
 

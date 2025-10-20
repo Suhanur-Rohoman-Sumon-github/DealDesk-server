@@ -10,7 +10,7 @@ const app: Application = express();
 // parser
 app.use(express.json());
 // CORS configuration
-const allowedOrigins = ['http://localhost:5173', 'https://yourdomain.com'];
+const allowedOrigins = ['http://localhost:5173', 'https://www.ssnmax.store'];
 app.use(cors({
   origin: function(origin, callback){
     if(!origin) return callback(null, true);

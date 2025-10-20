@@ -14,7 +14,6 @@ const loginUser = async (payload: TLoginUser) => {
  
   const isUserExists = await ssnUserModel.findOne({
     $or: [
-      { email: payload.email },
       { username: payload.username }
     ]
   });

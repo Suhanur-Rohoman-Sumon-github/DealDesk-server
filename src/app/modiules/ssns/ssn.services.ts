@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import QueryBuilder from "../../builder/Querybuilder";
+import config from "../../config";
 import { ssnUserModel } from "../ssnUser/ssnUser.model";
 import { TUser } from "../user/user.interface";
 import { SSNModel } from "./ssns.model";
@@ -7,59 +7,50 @@ import Binance from 'binance-api-node';
  import { Document } from "mongoose";
 // Initialize client with your API key and secret
 const client = Binance({
-  apiKey: process.env.BINANCE_API_KEY!,
-  apiSecret: process.env.BINANCE_API_SECRET!,
+  apiKey: config.binanceAoiKey,
+  apiSecret: config.binanceApiSecret,
 });
 
 
-const getAllSnnFromDb = async (query: Record<string, unknown>) => {
-  const categoryFilter: Record<string, unknown> = {
-    $or: [{ isSold: false }, { isSold: { $exists: false } }],
-  };
 
-  if (query.categoryId) {
-    categoryFilter.category = query.categoryId;
-    delete query.categoryId;
+const getAllSnnFromDb = async (query: Record<string, unknown>) => {
+  const filters: Record<string, any> = { $or: [{ isSold: false }, { isSold: { $exists: false } }] };
+
+  if (query.categoryId) filters.category = query.categoryId;
+
+  // Search optimization
+  if (typeof query.searchTerm === "string" && query.searchTerm) {
+    filters.$text = { $search: query.searchTerm.trim() };
+  } else {
+    if (query.city) filters.city = { $regex: `^${query.city}`, $options: "i" };
+    if (query.state) filters.state = { $regex: `^${query.state}`, $options: "i" };
+    if (query.zipCode) filters.zipCode = query.zipCode;
   }
 
-  // Convert page & limit to numbers
-  if (query.page) query.page = Number(query.page);
-  if (query.limit) query.limit = Number(query.limit);
+  if (query.dateOfBirthFrom || query.dateOfBirthTo) {
+    filters.birthYear = {};
+    if (query.dateOfBirthFrom)
+      filters.birthYear.$gte = Number(query.dateOfBirthFrom);
+    if (query.dateOfBirthTo)
+      filters.birthYear.$lte = Number(query.dateOfBirthTo);
+  }
 
-  // Partial string matches
-  const searchQuery: Record<string, any> = {};
-  if (query.firstName) searchQuery.firstName = { $regex: query.firstName, $options: "i" };
-  if (query.lastName) searchQuery.lastName = { $regex: query.lastName, $options: "i" };
-  if (query.city) searchQuery.city = { $regex: query.city, $options: "i" };
-  if (query.state) searchQuery.state = { $regex: query.state, $options: "i" };
-  if (query.zipCode) searchQuery.zipCode = query.zipCode;
+  const page = Number(query.page) || 1;
+  const limit = Number(query.limit) || 20;
 
-if (query.dateOfBirthFrom || query.dateOfBirthTo) {
-  // Convert strings to numbers
-  const fromYear = query.dateOfBirthFrom ? Number(query.dateOfBirthFrom) : undefined;
-  const toYear = query.dateOfBirthTo ? Number(query.dateOfBirthTo) : undefined;
+  const result = await SSNModel.find(filters)
+    .select("firstName lastName city state zipCode birthYear category")
+    .sort({ _id: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
 
-  // Filter function for Mongoose
-  searchQuery.$expr = {
-    $and: [
-      fromYear !== undefined ? { $gte: [{ $year: { $dateFromString: { dateString: "$dateOfBirth" } } }, fromYear] } : {},
-      toYear !== undefined ? { $lte: [{ $year: { $dateFromString: { dateString: "$dateOfBirth" } } }, toYear] } : {},
-    ],
-  };
-}
-  // Merge filters
-  const finalQuery = { ...categoryFilter, ...searchQuery };
+  const total = await SSNModel.countDocuments(filters);
+  const totalPage = Math.ceil(total / limit);
 
-  const PostsQuery = new QueryBuilder(SSNModel.find(finalQuery), query)
-    .sort()
-    .fields()
-    .paginate();
-
-  const result = await PostsQuery.modelQuery;
-  const meta = await PostsQuery.countTotal();
-
-  return { data: result, meta };
+  return { data: result, meta: { page, limit, total, totalPage } };
 };
+
 
 
 
@@ -122,33 +113,20 @@ const getMySsn = async (userId: string) => {
 }
 
 
-
-type Deposit = {
-  amount: string;
-  coin: string;
-  network: string;
-  status: number;
-  txId: string;
-  insertTime: number;
-  asset: string;
-  address: string;
-  addressTag?: string;
-  txType: string;
-  confirmTimes: string;
-}
-
 const makePayment = async (userId: string, amount: number, transactionId: string, coin: string) => {
   // Step 1: Fetch deposit history
   const depositHistory = await client.depositHistory({ coin }) as any;
 
-  // Step 2: Binance API might return { depositList: Deposit[] }
-  const deposits: Deposit[] = depositHistory.depositList || [];
+
 
   // Step 3: Find matching transaction
-  const tx = deposits.find(d => d.txId === transactionId && d.status === 1);
+  const tx = depositHistory.find((d: { txId: string; status: number; }) => d.txId === transactionId && d.status === 1);
+
   if (!tx) {
-    throw new Error("Transaction not found or not completed on Binance.");
+    throw new Error("Transaction not found or not completed .");
   }
+
+ 
 
   // Step 4: Fetch user from DB
  
@@ -162,8 +140,15 @@ const makePayment = async (userId: string, amount: number, transactionId: string
   }
 
   // Step 6: Update balance and save txId
-  user.balance += amount;
+  user.balance += tx.amount ? parseFloat(tx.amount) : 0;
   user.processedTxIds = [...(user.processedTxIds || []), transactionId];
+  user.transactions = [...(user.transactions || []), {
+    txId: transactionId,
+    amount: tx.amount ? parseFloat(tx.amount) : 0,    
+    coin: coin,
+    date: new Date(),
+    type: 'recharge'
+  }];
   await user.save();
 
   return {

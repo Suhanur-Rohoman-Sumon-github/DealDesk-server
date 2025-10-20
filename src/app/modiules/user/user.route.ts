@@ -35,4 +35,6 @@ router.get(
   userControllers.getAdmins
 );
 
+
+
 export const userRouter = router;

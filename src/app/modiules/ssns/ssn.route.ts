@@ -21,8 +21,7 @@ router.get('/:userId',
   SSNController.getMySsn
 );
 router.post('/:userId', 
-   Auth(), 
-  SSNController.getMySsn
+  SSNController.makePayment
 );
 
 

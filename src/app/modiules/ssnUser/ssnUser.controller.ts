@@ -24,10 +24,6 @@ const getUserBalance = catchAsync(async (req, res) => {
 });
 
 
-
-/**
- * Add SSNs to user's cart
- */
 const addToCart = catchAsync(async (req, res) => {
   const { userId, ssnIds } = req.body; // expects { userId: string, ssnIds: string[] }
   const updatedCart = await ssnUserCartService
@@ -40,9 +36,7 @@ const addToCart = catchAsync(async (req, res) => {
   });
 });
 
-/**
- * Remove SSNs from user's cart
- */
+
 const removeFromCart = catchAsync(async (req, res) => {
   const { userId, ssnIds } = req.body; // expects { userId: string, ssnIds: string[] }
   const updatedCart = await ssnUserCartService.removeFromCart(userId, ssnIds);
@@ -54,9 +48,7 @@ const removeFromCart = catchAsync(async (req, res) => {
   });
 });
 
-/**
- * Get user's cart
- */
+
 const getCart = catchAsync(async (req, res) => {
   const { userId } = req.params; // expects /cart/:userId
   const cart = await ssnUserCartService.getCart(userId);
@@ -68,14 +60,65 @@ const getCart = catchAsync(async (req, res) => {
   });
 });
 
+
+const updateProfilePicture = catchAsync(async (req, res) => {
+  const userId = req.params.userId
+  const profilePicture = req.file
+  
+
+  const result = await ssnUserServices.updateProfilePictureInDb(userId,profilePicture );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'user  profile picture updated successfully',
+    data: result,
+  });
+});
+
+const updateUserEmail = catchAsync(async (req, res) => {
+ 
+  const { newEmail,userId } = req.body;
+
+ await ssnUserServices.updateUserEmailInDb(userId, newEmail);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Email updated successfully",
+    data: "",
+  });
+});
+
+const updateUserPassword = catchAsync(async (req, res) => {
+
+  const { currentPassword, newPassword,userId } = req.body;
+
+ await ssnUserServices.updateUserPasswordInDb(
+    userId,
+    currentPassword,
+    newPassword
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password updated successfully",
+    data: "",
+  });
+});
+
+
+export const ssnUserController = {
+    createSnUser,
+    getUserBalance,
+    updateProfilePicture,
+    updateUserEmail,
+    updateUserPassword
+}
+
 export const ssnUserCartController = {
   addToCart,
   removeFromCart,
   getCart,
 };
-
-
-export const ssnUserController = {
-    createSnUser,
-    getUserBalance
-}

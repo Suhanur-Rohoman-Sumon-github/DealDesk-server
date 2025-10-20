@@ -19,6 +19,8 @@ export default {
   adminPassword: process.env.ADMIN_PASSWORD,
   adminProfilePhoto: process.env.ADMIN_PROFILE_PHOTO,
   adminMobileNumber: process.env.ADMIN_MOBILE_NUMBER,
+  binanceAoiKey: process.env.BINANCE_API_KEY,
+  binanceApiSecret: process.env.BINANCE_API_SECRET,
 
   cloudinary: {
     cloudName: process.env.CLOUDINARY_CLOUD_NAME,
@@ -32,6 +34,5 @@ export default {
   },
 
   stripeSecretKey: process.env.STRIPE_SECRET_KEY,
-
   reset_pass_ui_link: process.env.RESET_PASS_UI_LINK,
 };

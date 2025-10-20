@@ -6,7 +6,7 @@ import { ssnService } from "./ssn.services"
 
 const getAllSSnController = catchAsync(async (req, res) => {
   const query = req.query
-  console.log(query);
+
   const result = await ssnService.getAllSnnFromDb(query)
   sendResponse(res, {
     statusCode: StatusCodes.OK,
@@ -40,9 +40,9 @@ const getMySsn = catchAsync(async (req, res) => {
   });
 });
 const makePayment = catchAsync(async (req, res) => {
-  const { userId } = req.params;  
- 
-  const result = await ssnService.getMySsn(userId);
+
+  const result = await ssnService.makePayment(req.body.userId, req.body.amount, req.body.transactionId, req.body.coin);
+
   sendResponse(res, {
     statusCode: StatusCodes.OK,
     success: true,

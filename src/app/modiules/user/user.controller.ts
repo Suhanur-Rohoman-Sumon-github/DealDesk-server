@@ -81,7 +81,7 @@ const getUserVerificationCode = catchAsync(async (req, res) => {
 });
 const verifyEmail = catchAsync(async (req, res) => {
    const { code } = req.body;
-   console.log(code);
+
   const result = await UserServices.verifyEmailFromDb(code as string);
 
   sendResponse(res, {
@@ -140,6 +140,8 @@ const updateAdminPaymentLinks = catchAsync(async (req, res) => {
   });
 });
 
+
+
 export const userControllers = {
   createUser,
   createAdmin,
@@ -152,5 +154,6 @@ export const userControllers = {
   updateMyTeligramChanel,
   getMyChanel,
   getAdmins,
-  updateAdminPaymentLinks
+  updateAdminPaymentLinks,
+ 
 };

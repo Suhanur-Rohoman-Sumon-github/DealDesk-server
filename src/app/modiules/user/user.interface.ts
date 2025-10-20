@@ -46,6 +46,14 @@ export type TUser = {
     LTC?: string;
     TRC20?: string;
   };
+  transactions?: {
+    txId: string;
+    amount: number;
+    type: 'recharge' | 'purchase';
+    date: Date;
+    coin: string;
+  }[];
+
 };
 
 export type TUserModel = {

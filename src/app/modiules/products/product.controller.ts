@@ -7,10 +7,10 @@ const createProducts = catchAsync(async (req, res) => {
   const { title, description, price, stock, category, buyPrice, sellprice } =
     JSON.parse(req.body.data)
 
-    console.log(req.body.data);
+
 
   let images: Express.Multer.File[] = []
-  console.log(images);
+ 
 
   if (Array.isArray(req.files)) {
    

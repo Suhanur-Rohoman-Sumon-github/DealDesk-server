@@ -30,11 +30,33 @@ const userSchema = new Schema<TUser>(
         ref: "SSN",
       }
     ],
-    processedTxIds: { type: [String], default: [] },
+    transactions: [
+      {
+        txId: { type: String, required: true, unique: true },
+        amount: { type: Number, required: true },
+        type: { type: String, enum: ['recharge', 'purchase'], required: true },
+        date: { type: Date, default: Date.now },
+        coin: { type: String  }
+      },
+    ],
     role:{
       type: String,
       enum: ['user', 'admin'],
       default: 'user',  
+    },
+    profilePicture: {
+      type: String,
+      default:"https://static.vecteezy.com/system/resources/previews/025/463/773/non_2x/hacker-logo-design-a-mysterious-and-dangerous-hacker-illustration-vector.jpg"
+    },
+    processedTxIds: [
+      {
+        type: String,
+        unique: true,
+      },
+    ],
+    email:{
+     type: String,
+      default: "",
     }
   },
   {
