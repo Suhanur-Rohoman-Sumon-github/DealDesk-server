@@ -22,6 +22,8 @@ const getAllSnnFromDb = async (query: Record<string, unknown>) => {
   if (typeof query.searchTerm === "string" && query.searchTerm) {
     filters.$text = { $search: query.searchTerm.trim() };
   } else {
+    if (query.firstName) filters.firstName = { $regex: `^${query.firstName}`, $options: "i" };
+    if (query.lastName) filters.lastName = { $regex: `^${query.lastName}`, $options: "i" };
     if (query.city) filters.city = { $regex: `^${query.city}`, $options: "i" };
     if (query.state) filters.state = { $regex: `^${query.state}`, $options: "i" };
     if (query.zipCode) filters.zipCode = query.zipCode;
