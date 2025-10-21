@@ -27,23 +27,26 @@ const getAllSnnFromDb = async (query: Record<string, unknown>) => {
     if (query.zipCode) filters.zipCode = query.zipCode;
   }
 
-  if (query.dateOfBirthFrom || query.dateOfBirthTo) {
-    filters.birthYear = {};
-    if (query.dateOfBirthFrom)
-      filters.birthYear.$gte = Number(query.dateOfBirthFrom);
-    if (query.dateOfBirthTo)
-      filters.birthYear.$lte = Number(query.dateOfBirthTo);
-  }
+if (query.dateOfBirthFrom || query.dateOfBirthTo) {
+  filters.dateOfBirth = {};
+  if (query.dateOfBirthFrom)
+    filters.dateOfBirth.$gte = `${query.dateOfBirthFrom}-01-01`;
+  if (query.dateOfBirthTo)
+    filters.dateOfBirth.$lte = `${query.dateOfBirthTo}-12-31`;
+}
+
 
   const page = Number(query.page) || 1;
   const limit = Number(query.limit) || 20;
 
   const result = await SSNModel.find(filters)
-    .select("firstName lastName city state zipCode birthYear category")
+    .select("firstName lastName city state zipCode dateOfBirth category")
     .sort({ _id: -1 })
     .skip((page - 1) * limit)
     .limit(limit)
     .lean();
+
+    
 
   const total = await SSNModel.countDocuments(filters);
   const totalPage = Math.ceil(total / limit);
