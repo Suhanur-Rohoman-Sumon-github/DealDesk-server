@@ -53,6 +53,7 @@ export type TUser = {
     date: Date;
     coin: string;
   }[];
+  balance?: number;
 
 };
 

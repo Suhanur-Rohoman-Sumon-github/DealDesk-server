@@ -140,7 +140,10 @@ const removeFromCart = async (userId: string, ssnIds: string[]) => {
 
 
 const getCart = async (userId: string) => {
-  const user = await ssnUserModel.findById(userId).populate("cart");
+  const user = await ssnUserModel.findById(userId).populate({
+    path: "cart",
+    select: "firstName lastName city state zipCode dateOfBirth category"
+  });
   if (!user) throw new Error("User not found");
 
   return user.cart;

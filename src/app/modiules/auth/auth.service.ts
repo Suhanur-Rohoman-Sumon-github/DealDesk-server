@@ -12,7 +12,7 @@ import { ssnUserModel } from '../ssnUser/ssnUser.model';
 
 const loginUser = async (payload: TLoginUser) => {
  
-  const isUserExists = await ssnUserModel.findOne({
+  const isUserExists = await (userModel || ssnUserModel).findOne({
     $or: [
       { username: payload.username }
     ]
@@ -37,7 +37,7 @@ if (!isPasswordValid) {
     userId: isUserExists.id,
     role: isUserExists.role,
     username: isUserExists.username,
-    balance: isUserExists.balance,
+    balance: isUserExists!.balance,
   };
 
   const accessToken = createToken(

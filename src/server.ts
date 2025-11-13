@@ -3,11 +3,11 @@ import app from './app';
 import { Server } from 'http';
 import config from './app/config';
 
-let server: Server;
+let server: Server | undefined;
 async function main() {
   try {
     await mongoose.connect(config.database_url as string);
-    app.listen(config.port, () => {
+    server = app.listen(config.port, () => {
       console.log(`app is  listening on port ${config.port}`);
     });
   } catch (error) {
